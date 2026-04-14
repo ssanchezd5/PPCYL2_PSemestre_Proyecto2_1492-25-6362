@@ -99,3 +99,5 @@ CONCLUSIONES
 El desarrollo del sistema permitió aplicar conceptos fundamentales de ingeniería de software, incluyendo arquitectura cliente-servidor, manejo de estructuras de datos y comunicación entre servicios. La combinación de Django y Flask demostró ser una solución efectiva para separar responsabilidades dentro de una aplicación web.
 Finalmente, el uso de la matriz dispersa evidenció la importancia de seleccionar estructuras de datos adecuadas para optimizar el rendimiento y la eficiencia del sistema.
 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/f09d2ada-f2d4-4399-aea1-3d65c3263c34" />
+
