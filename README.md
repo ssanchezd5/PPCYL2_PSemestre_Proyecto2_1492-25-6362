@@ -29,6 +29,7 @@ Grupo número 7
 1492
 Sección “A” vespertina
 13/04/2026
+\*
 Introducción
 El presente proyecto consiste en el desarrollo de un sistema web orientado a la gestión de información académica, específicamente en el manejo y visualización de notas estudiantiles. Para su implementación se emplearon tecnologías modernas del entorno Python, destacando el uso de Django como framework principal para la construcción de la interfaz de usuario y Flask como componente encargado del procesamiento de datos.
 El sistema se diseñó bajo un enfoque modular, permitiendo la separación de responsabilidades entre la capa de presentación y la lógica de procesamiento. Esta decisión arquitectónica facilita la escalabilidad del sistema, así como su mantenimiento y posible extensión futura. Asimismo, se incorpora el uso de archivos XML como medio de entrada de datos estructurados, los cuales son procesados y transformados en información útil para el usuario final.
