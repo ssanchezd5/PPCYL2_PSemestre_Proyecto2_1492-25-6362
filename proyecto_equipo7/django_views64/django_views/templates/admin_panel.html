@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Panel de Administración</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; border-bottom: 2px solid #e67e22; padding-bottom: 10px; }
+        .grid { display: flex; gap: 20px; margin-bottom: 30px; }
+        .box { flex: 1; background: #fdf2e9; padding: 15px; border-radius: 8px; border: 1px solid #fab17a; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #e67e22; color: white; }
+        input, select { width: 90%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px; }
+        .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; }
+        .btn-add { background: #27ae60; }
+        .btn-del { background: #e74c3c; }
+        .btn-logout { color: #e74c3c; text-decoration: none; font-weight: bold; display: block; margin-top: 20px; }
+        .mensaje { margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Panel Administrativo</h2>
+        <p>Sesión iniciada como: <b>{{ usuario }}</b></p>
+
+        <!-- 🔥 NUEVO: CARGAR XML CONFIGURACIÓN -->
+        <div class="box" style="margin-bottom:20px;">
+            <h3>Cargar Configuración XML</h3>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" name="archivo_config" accept=".xml" required>
+                <button type="submit" class="btn btn-add">Cargar XML</button>
+            </form>
+
+            {% if mensaje %}
+                <p class="mensaje">{{ mensaje }}</p>
+            {% endif %}
+        </div>
+
+        <div class="grid">
+            <div class="box">
+                <h3>Crear / Modificar Usuario</h3>
+                <form action="/crear_usuario/" method="POST">
+                    {% csrf_token %}
+                    <input type="text" name="nuevo_nom" placeholder="Nombre de Usuario" required>
+                    <input type="password" name="nuevo_pass" placeholder="Contraseña" required>
+                    <select name="nuevo_rol">
+                        <option value="maestro">Maestro</option>
+                        <option value="alumno">Alumno</option>
+                        <option value="administrador">Administrador</option>
+                    </select>
+                    <button type="submit" class="btn btn-add">Guardar Usuario</button>
+                </form>
+            </div>
+
+            <div class="box">
+                <h3>Eliminar Usuario</h3>
+                <form action="/eliminar_usuario/" method="POST">
+                    {% csrf_token %}
+                    <input type="text" name="nombre_eliminar" placeholder="Nombre exacto" required>
+                    <p style="font-size: 0.8em; color: #666;">Nota: No puedes eliminar admin_root.</p>
+                    <button type="submit" class="btn btn-del">Eliminar Permanentemente</button>
+                </form>
+            </div>
+        </div>
+
+        <h3>Usuarios Registrados en el Sistema</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Rol / Permisos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios_sistema %}
+                <tr>
+                    <td>{{ u.usuario }}</td>
+                    <td>
+                        <span style="text-transform: capitalize; padding: 3px 8px; border-radius: 12px; font-size: 0.9em;
+                        {% if u.rol == 'administrador' %} background: #ffdada; color: #c0392b;
+                        {% else %} background: #d5f5e3; color: #27ae60; {% endif %}">
+                            {{ u.rol }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="/logout/" class="btn-logout">Cerrar Sesión</a>
+    </div>
+</body>
+</html>

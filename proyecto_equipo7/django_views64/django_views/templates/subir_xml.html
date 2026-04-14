@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Maestro - {{ materia }}</title>
+
+    <!-- 🔥 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; padding: 40px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h2 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; margin-bottom: 20px; }
+        .section { background: #e8f4fd; padding: 20px; border-radius: 10px; margin-bottom: 25px; border: 1px solid #d1e9f9; }
+        h3 { margin-top: 0; color: #34495e; font-size: 1.2em; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+        th { background-color: #3498db; color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #eee; color: #333; }
+        tr:hover { background-color: #f9f9f9; }
+
+        input[type="file"], input[type="text"] { padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-right: 10px; }
+        button { background: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #2980b9; }
+
+        .logout { display: inline-block; margin-top: 20px; color: #e74c3c; text-decoration: none; font-weight: bold; }
+        .logout:hover { text-decoration: underline; }
+
+        .chart-container { margin-top: 30px; padding: 20px; background: #fff; border: 1px solid #3498db; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Panel Maestro: {{ materia }}</h2>
+    <p>Usuario: <strong>{{ usuario }}</strong></p>
+
+    <div class="section">
+        <h3>Cargar Notas desde XML</h3>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="archivo_xml" accept=".xml" required>
+            <button type="submit">Actualizar Notas</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h3>Establecer Horario</h3>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="nuevo_horario" placeholder="Ej: Lunes 08:00 - 10:00" required>
+            <button type="submit">Guardar Horario</button>
+        </form>
+    </div>
+
+    <!-- 🔥 GRÁFICA -->
+    {% if alumnos %}
+    <div class="chart-container">
+        <h3 style="text-align:center;">Gráfica de Notas</h3>
+        <canvas id="graficaNotas"></canvas>
+    </div>
+    {% endif %}
+
+    <h3>Alumnos con notas en {{ materia }}</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Calificación</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alumno in alumnos %}
+            <tr>
+                <!-- 🔥 clases para JS -->
+                <td class="nombre-alumno">{{ alumno.nombre }}</td>
+                <td class="nota-alumno">{{ alumno.nota }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2" style="text-align: center; color: #999;">No hay notas cargadas para esta materia aún.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="/logout/" class="logout">Cerrar Sesión</a>
+</div>
+
+<!-- 🔥 SCRIPT GRÁFICA -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const nombres = Array.from(document.querySelectorAll('.nombre-alumno')).map(td => td.innerText);
+    const notas = Array.from(document.querySelectorAll('.nota-alumno')).map(td => parseFloat(td.innerText));
+
+    if (nombres.length > 0) {
+
+        let datos = nombres.map((n, i) => ({ nombre: n, nota: notas[i] }));
+
+        // ordenar de mayor a menor
+        datos.sort((a, b) => b.nota - a.nota);
+
+        const ctx = document.getElementById('graficaNotas').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: datos.map(d => d.nombre),
+                datasets: [{
+                    label: 'Calificación',
+                    data: datos.map(d => d.nota),
+                    backgroundColor: '#3498db'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+
+</body>
+</html>
